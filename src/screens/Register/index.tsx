@@ -35,10 +35,7 @@ export const Register = () => {
             telphone: data.telphone,
             password: data.password,
         };
-        dispatch(registerCredentials(config));
-        if (error === ''){
-            navigation.navigate('Confirm');
-        }
+        dispatch(registerCredentials(config, navigation));
     };
 
 
@@ -70,6 +67,7 @@ export const Register = () => {
                 handleCancel={handleModalPhotos}
             />
             <View style={styles.content}>
+                {error !== '' && <Text style={styles.textWrong}>{error}</Text>}
                 <Controller
                     control={control}
                     rules={{

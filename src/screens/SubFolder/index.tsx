@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import { COLORS, FONTS } from '../../../constants/theme';
 import { Folder } from '../../components/Folder';
 import { ModalCreateFolder } from '../../components/ModalCreateFolder';
+import { ModalDeleteFolder } from '../../components/ModalDeleteFolder';
 
 interface PropsFolder{
     route: any;
@@ -17,14 +18,25 @@ interface SubFolderProps{
     id: '',
     name: '',
     project_id: '',
+    question?: '',
     file_id: [],
 }
 
 export const SubFolderContent = ({ route, navigation }: PropsFolder) => {
     const [openCreateFolder, setOpenCreateFolder] = useState<boolean>(false);
+    const [openDeleteFolder, setOpenDeleteFolder] = useState<boolean>(false);
+    const [subFolderDelete, setSubFolderDelete] = useState({
+        name: '',
+        id: '',
+        fileId: '',
+        subFolderId: '',
+    });
+
+    const handleDeleteFolder = () => {
+        setOpenDeleteFolder(prevState => !prevState);
+    };
 
     const {data, id} = route.params;
-    console.log(data);
 
     const handleOpenCreateFolder = () => {
         setOpenCreateFolder(prevState => !prevState);
@@ -37,6 +49,16 @@ export const SubFolderContent = ({ route, navigation }: PropsFolder) => {
                 handleCancel={handleOpenCreateFolder}
                 idFolder={id}
                 navigation={navigation}
+            />
+            <ModalDeleteFolder
+                open={openDeleteFolder}
+                handleCancel={handleDeleteFolder}
+                navigation={navigation}
+                name={subFolderDelete.name}
+                idFolder={subFolderDelete.id}
+                folderId={id}
+                fileDelete={subFolderDelete.fileId}
+                subFolderId={subFolderDelete.subFolderId}
             />
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -51,19 +73,28 @@ export const SubFolderContent = ({ route, navigation }: PropsFolder) => {
                 </View>
             </View>
             <View style={styles.content}>
-                {data === null ? (
+                {data.length === 0 ? (
                     <View style={styles.empty}>
                         <Text style={styles.title}>Nenhum arquivo</Text>
                     </View>
                 ) : (
-                    data !== null && data.map((item: SubFolderProps, index: number) => {
+                    data.length !== 0 && data.map((item: SubFolderProps, index: number) => {
                         return (
                             item !== null &&
                             <Folder
                                 key={index}
-                                name={item?.name}
+                                name={item?.id}
                                 id={item?.id}
-                                type={true}
+                                type={item?.question ? false : true}
+                                onLongPress={() => {
+                                    setSubFolderDelete({
+                                        name: item.id,
+                                        id: item.id,
+                                        fileId: item.id,
+                                        subFolderId: id,
+                                    });
+                                    handleDeleteFolder();
+                                }}
                             />
                         );
                     })

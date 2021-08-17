@@ -9,7 +9,7 @@ interface PropsButton extends TouchableOpacityProps{
     name: string;
     type: boolean;
     create?: boolean;
-    id: string;
+    id?: string;
     idFolderSelect?: string;
 }
 
@@ -52,6 +52,6 @@ const styles = StyleSheet.create({
         ...FONTS.h3,
         color: COLORS.blue_1,
         textAlign: 'center',
-        maxWidth: 80,
+        maxWidth: 70,
     },
 });

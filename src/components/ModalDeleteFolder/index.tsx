@@ -7,6 +7,7 @@ import { View, Animated, StyleSheet, Modal, TouchableOpacity, TouchableWithoutFe
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
 import { COLORS, FONTS, SIZES } from '../../../constants/theme';
+import { deleteFlashCard } from '../../stores/action/flashAction';
 import { deleteFolder } from '../../stores/action/folderAction';
 import { Button } from '../Button';
 
@@ -16,9 +17,12 @@ interface PropsModal{
     idFolder: string;
     navigation: any;
     name: string,
+    folderId?: string;
+    fileDelete?: string;
+    subFolderId?: string;
 }
 
-export const ModalDeleteFolder = ({open, idFolder, name, navigation, handleCancel}: PropsModal) => {
+export const ModalDeleteFolder = ({open, idFolder, name, navigation, folderId, fileDelete, subFolderId, handleCancel}: PropsModal) => {
 
     const modalAnimatedValue = useRef(new Animated.Value(0)).current;
 
@@ -48,7 +52,12 @@ export const ModalDeleteFolder = ({open, idFolder, name, navigation, handleCance
     });
 
     const handleDelete = () => {
-        dispatch(deleteFolder(idFolder, account.project_id));
+        console.log({
+            fileDelete, project: account.project_id, folderId,
+        });
+        !fileDelete ?
+        dispatch(deleteFolder(idFolder, account.project_id, folderId, navigation)) :
+        dispatch(deleteFlashCard(fileDelete, account.project_id, folderId, navigation, subFolderId));
         navigation.navigate('Home');
         handleCancel();
     };
@@ -67,7 +76,7 @@ export const ModalDeleteFolder = ({open, idFolder, name, navigation, handleCance
                     <TouchableOpacity onPress={handleCancel} style={styles.header}>
                         <Icon name="times" size={30} color={COLORS.blue_1} />
                     </TouchableOpacity>
-                    <Text style={styles.title}>{`Deseja deletar a pasta ${name}`}</Text>
+                    <Text style={styles.title}>{`Deseja deletar ${fileDelete ? 'o arquivo' : 'a pasta'} ${name}`}</Text>
                     <View style={styles.buttonContent}></View>
                     <Button
                         title="Sim"

@@ -133,6 +133,7 @@ export const Home = () => {
                                     onPress={() => navigation.navigate('Folder', {
                                         id: item.id,
                                         data: item.folders,
+                                        files: item.file_id,
                                     })}
                                     onLongPress={() => {
                                         setName(item.name);

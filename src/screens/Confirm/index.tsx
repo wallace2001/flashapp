@@ -18,22 +18,24 @@ export const Confirm = () => {
 
     const [value, setValue] = useState('');
     const ref = useBlurOnFulfill({value, cellCount: 6});
+    const [errorEmpty, setErrorEmpty] = useState(false);
     const [props, getCellOnLayoutHandler] = useClearByFocusCell({
         value,
         setValue,
     });
 
-    const { idCreate, success } = useSelector((state: RootStateOrAny) => state.authReducer);
+    const { idCreate, error } = useSelector((state: RootStateOrAny) => state.authReducer);
 
     const navigation: any = useNavigation();
     const dispatch = useDispatch();
 
     const handleConfirmAccount = () => {
-        dispatch(confirmAccount(value, idCreate));
-
-        if (success){
-            navigation.navigate('Congratulations');
+        if (value === ''){
+            setErrorEmpty(true);
+            return;
         }
+        setErrorEmpty(false);
+        dispatch(confirmAccount(value, idCreate, navigation));
     };
 
     return (
@@ -44,6 +46,8 @@ export const Confirm = () => {
             </View>
             <View style={styles.bottom}>
                 <Text style={styles.text}>Verifique o código que enviamos para o seu telefone</Text>
+                {errorEmpty && <Text style={styles.textWrong}>Digite um código</Text>}
+                {error !== '' && <Text style={styles.textWrong}>{error}</Text>}
                 <View style={styles.inputs}>
                 <CodeField
                     ref={ref}
@@ -156,5 +160,10 @@ const styles = StyleSheet.create({
     },
     focusCell: {
       borderColor: COLORS.secondary,
+    },
+    textWrong: {
+        ...FONTS.h4,
+        color: COLORS.red_1,
+        marginTop: 10,
     },
 });

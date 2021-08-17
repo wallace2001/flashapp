@@ -2,6 +2,7 @@
 
 import { Asset } from 'react-native-image-picker';
 import { HttpAuth } from '../../config/http';
+import { requestFolder } from './folderAction';
 import { changeLoading } from './loadingAction';
 
 interface PropsForms{
@@ -45,7 +46,7 @@ export const changeProgress = (progress: number) => (dispatch: any) => {
     dispatch(change(progress));
 };
 
-export const createFlashCard = (forms: PropsForms) => async(dispatch: any) => {
+export const createFlashCard = (forms: PropsForms, projectId: string) => async(dispatch: any) => {
     const config = {
         folder_id: forms.folder_id ? forms.folder_id : '',
         sub_folder_id: forms.sub_folder_id ? forms.sub_folder_id : '',
@@ -72,6 +73,7 @@ export const createFlashCard = (forms: PropsForms) => async(dispatch: any) => {
             dispatch(changeLoading(false));
 
             if (!res.data.error){
+                dispatch(requestFolder(projectId));
                 forms.navigation.navigate('Main');
                 dispatch(error(''));
                 dispatch(success(true));
@@ -79,6 +81,24 @@ export const createFlashCard = (forms: PropsForms) => async(dispatch: any) => {
                 dispatch(error('Erro ao criar arquivo.'));
                 dispatch(success(false));
             }
+        }).catch(() => {
+            dispatch(error('Erro ao criar arquivo.'));
+            dispatch(success(false));
         });
     }
+};
+
+export const deleteFlashCard = (id: string, projectId: string, folderId: string | undefined, navigation: any, subFolderId?: string) => async(dispatch: any) => {
+
+    await HttpAuth.delete(`/delete_file?folder_id=${folderId}&sub_folder_id=${subFolderId ? subFolderId : ''}&id=${id}`).then(res => {
+        if (!res.data.error){
+            dispatch(requestFolder(projectId));
+            navigation.navigate('Home');
+            dispatch(success(true));
+            dispatch(error(''));
+        }
+    }).catch(() => {
+        dispatch(success(false));
+        dispatch(error('Erro ao deletar arquivo.'));
+    });
 };

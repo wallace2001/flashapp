@@ -20,6 +20,8 @@ export const Login = () => {
     const dispatch = useDispatch();
     const { loading, error } = useSelector((state: RootStateOrAny) => state.authReducer);
 
+    console.log(error);
+
     const onSubmit = async(data: PropsHookForm) => {
         const credentials = {
             email: data.email,
@@ -42,8 +44,8 @@ export const Login = () => {
                 <View style={styles.header_2}>
                     <Text style={styles.title}>Bem vindo ao FlashApp</Text>
                 </View>
-                {error !== '' && <Text style={styles.textWrong}>{error}</Text>}
                 <View style={styles.content}>
+                    {error !== '' && <Text style={styles.textWrong}>{error}</Text>}
                     <Controller
                         control={control}
                         rules={{

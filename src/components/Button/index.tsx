@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import { ActivityIndicator, StyleSheet, TouchableOpacityProps, View } from 'react-native';
 import { Text, TouchableOpacity } from 'react-native';
@@ -22,7 +23,9 @@ export const Button = ({title, type, icon, colorText, loading, ...rest}: PropsBu
                     start={{x: 0, y: 0}}
                     end={{x: 1, y: 0}}
                     colors={[COLORS.secondary, COLORS.primary]}
-                    style={styles.content}
+                    style={[styles.content, {
+                        borderRadius: type ? 10 : 100,
+                    }]}
                 >
                     {loading ? (
                         <ActivityIndicator size="small" color={COLORS.white}/>
@@ -32,7 +35,7 @@ export const Button = ({title, type, icon, colorText, loading, ...rest}: PropsBu
                 </LinearGradient>
             ) : (
                 <View
-                    style={[styles.content, {backgroundColor: COLORS.blue_transparent}]}
+                    style={[styles.content, {backgroundColor: COLORS.blue_transparent, borderRadius: type ? 10 : 100,}]}
                 >
                     {icon && <Icon name="facebook" size={20} color={COLORS.blue_1} />}
                     <Text
@@ -49,7 +52,6 @@ const styles = StyleSheet.create({
     },
     content: {
         height: 45,
-        borderRadius: 100,
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',

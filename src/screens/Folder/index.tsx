@@ -1,12 +1,14 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
 import React, { useState } from 'react';
-import { Image, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import MiniLogo from '../../../assets/images/minilogo.png';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { COLORS, FONTS } from '../../../constants/theme';
 import { Folder } from '../../components/Folder';
 import { ModalCreateFolder } from '../../components/ModalCreateFolder';
+import { ModalDeleteFolder } from '../../components/ModalDeleteFolder';
+import { Button } from '../../components/Button';
 
 interface PropsFolder{
     route: any;
@@ -49,12 +51,21 @@ interface PropsFolders{
 
 export const FolderContent = ({ route, navigation }: PropsFolder) => {
     const [openCreateFolder, setOpenCreateFolder] = useState<boolean>(false);
+    const [openDeleteFolder, setOpenDeleteFolder] = useState<boolean>(false);
+    const [subFolderDelete, setSubFolderDelete] = useState({
+        name: '',
+        id: '',
+        fileId: '',
+    });
 
-    const {data, id} = route.params;
-    console.log(data);
+    const {data, id, files} = route.params;
 
     const handleOpenCreateFolder = () => {
         setOpenCreateFolder(prevState => !prevState);
+    };
+
+    const handleDeleteFolder = () => {
+        setOpenDeleteFolder(prevState => !prevState);
     };
 
     return (
@@ -64,6 +75,15 @@ export const FolderContent = ({ route, navigation }: PropsFolder) => {
                 handleCancel={handleOpenCreateFolder}
                 idFolder={id}
                 navigation={navigation}
+            />
+            <ModalDeleteFolder
+                open={openDeleteFolder}
+                handleCancel={handleDeleteFolder}
+                navigation={navigation}
+                name={subFolderDelete.name}
+                idFolder={subFolderDelete.id}
+                folderId={id}
+                fileDelete={subFolderDelete.fileId}
             />
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -77,28 +97,59 @@ export const FolderContent = ({ route, navigation }: PropsFolder) => {
                     <Text style={styles.title}>FlashApp</Text>
                 </View>
             </View>
-            <View style={styles.content}>
-                <Folder
-                    name="Criar"
-                    type={true}
-                    create={true}
-                    onPress={handleOpenCreateFolder}
-                />
-                {data.map((item: SubFolderProps, index: number) => {
-                    return (
-                        item !== null &&
-                        <Folder
-                            key={index}
-                            name={item?.name}
-                            type={true}
-                            onPress={() => navigation.navigate('SubFolder', {
-                                id: item.id,
-                                data: item.file_id,
-                            })}
-                        />
-                    );
-                })}
-            </View>
+            <ScrollView>
+                <View style={styles.content}>
+                    <Folder
+                        name="Criar"
+                        type={true}
+                        create={true}
+                        onPress={handleOpenCreateFolder}
+                    />
+                    {data.map((item: SubFolderProps, index: number) => {
+                        return (
+                            item !== null &&
+                                <Folder
+                                key={index}
+                                name={item?.name}
+                                type={true}
+                                onPress={() => navigation.navigate('SubFolder', {
+                                    id: item.id,
+                                    data: item.file_id,
+                                })}
+                                onLongPress={() => {
+                                    setSubFolderDelete({
+                                        name: item.name,
+                                        id: item.id,
+                                        fileId: '',
+                                    });
+                                    handleDeleteFolder();
+                                }}
+                            />
+                            );
+                        })}
+                        {files?.map((item: any, index: number) => {
+                            return (
+                                <Folder
+                                    key={index}
+                                    name={item?.id}
+                                    type={false}
+                                    onLongPress={() => {
+                                        setSubFolderDelete({
+                                            name: item.id,
+                                            id: item.id,
+                                            fileId: item.id,
+                                        });
+                                        handleDeleteFolder();
+                                    }}
+                                />
+                            );
+                        })}
+                </View>
+            </ScrollView>
+            <Button
+                title="Estudar"
+                type={true}
+            />
         </View>
     );
 };

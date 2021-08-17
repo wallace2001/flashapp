@@ -79,6 +79,11 @@ export const authenticationRefreshToken = (idRefresh: string) => async(dispatch:
             dispatch(success(false));
         }
 
+    }).catch(() => {
+        dispatch(changeLoading(false));
+        dispatch(loading(false));
+        dispatch(error('Token inválido.'));
+        dispatch(success(false));
     });
 };
 
@@ -97,6 +102,11 @@ export const authenticationTokenValidation = () => async(dispatch: any) => {
             dispatch(success(false));
             dispatch(error('Erro ao entrar'));
         }
+    }).catch(() => {
+        dispatch(changeLoading(false));
+        dispatch(loading(false));
+        dispatch(error('Token inválido.'));
+        dispatch(success(false));
     });
 };
 
@@ -110,11 +120,13 @@ export const authentication = (credentials: PropsCredentials) => async(dispatch:
             AsyncStorage.setItem('access_token', res.data.token);
             AsyncStorage.setItem('refresh_token', res.data.refreshToken.id);
             dispatch(authenticationRefreshToken(res.data.refreshToken.id));
-        } else {
-            dispatch(error('Dados inválidos'));
-            dispatch(success(false));
         }
 
+    }).catch(() => {
+        dispatch(changeLoading(false));
+        dispatch(loading(false));
+        dispatch(error('Dados inválidos.'));
+        dispatch(success(false));
     });
 };
 
@@ -136,7 +148,7 @@ export const saveImage = (credentials: PropsRegisterCredentials) => (dispatch: a
     dispatch(create({...credentials}));
 };
 
-export const registerCredentials = (credentials: PropsRegisterCredentials) => (dispatch: any) => {
+export const registerCredentials = (credentials: PropsRegisterCredentials, navigation: any) => (dispatch: any) => {
     dispatch(changeLoading(true));
     dispatch(loading(true));
 
@@ -148,15 +160,21 @@ export const registerCredentials = (credentials: PropsRegisterCredentials) => (d
             dispatch(createnow(res.data.user.id));
             dispatch(error(''));
             dispatch(success(true));
+            navigation.navigate('Confirm');
         } else {
             dispatch(error('Erro ao cadastrar'));
             dispatch(success(false));
         }
+    }).catch(() => {
+        dispatch(changeLoading(false));
+        dispatch(loading(false));
+        dispatch(error('Erro ao criar sua conta.'));
+        dispatch(success(false));
     });
     dispatch(create({...credentials}));
 };
 
-export const confirmAccount = (code: string, id: string) => (dispatch: any) => {
+export const confirmAccount = (code: string, id: string, navigation: any) => (dispatch: any) => {
     dispatch(changeLoading(true));
     dispatch(loading(true));
 
@@ -167,9 +185,15 @@ export const confirmAccount = (code: string, id: string) => (dispatch: any) => {
         if (!res.data.error){
             dispatch(error(''));
             dispatch(success(true));
+            navigation.navigate('Congratulations');
         } else {
             dispatch(error('Erro ao verificar conta'));
             dispatch(success(false));
         }
+    }).catch(() => {
+        dispatch(changeLoading(false));
+        dispatch(loading(false));
+        dispatch(error('Erro ao confirmar conta.'));
+        dispatch(success(false));
     });
 };

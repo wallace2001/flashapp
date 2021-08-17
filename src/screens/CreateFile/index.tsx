@@ -75,15 +75,14 @@ export const CreateFlashCard = () => {
     const [screenSubFolder, setScreenSubFolder] = useState<boolean>(false);
     const [idFolderSelect, setIdFolderSelect] = useState<string>(flashDetails?.folder_id ? flashDetails?.folder_id : '');
     const [idSubFolderSelect, setIdSubFolderSelect] = useState<string>(flashDetails?.sub_folder_id ? flashDetails?.sub_folder_id : '');
-    const [, setCamera] = useState<any>();
     const [flashCard, setFlashCard] = useState<PropsFlashCard>({
         question: flashDetails?.question ? flashDetails?.question : '',
         response: flashDetails?.response ? flashDetails?.response : '',
     });
     const [sideFlash, setSideFlash] = useState(false);
     const [photos, setPhotos] = useState<PropsPhotos | any>({
-        front: undefined,
-        back: undefined,
+        front: [],
+        back: [],
     });
 
     const subFolderTruth = subFolder?.length === 0 ? false : true;
@@ -92,13 +91,12 @@ export const CreateFlashCard = () => {
 
     const dispatch = useDispatch();
 
-    console.log(flashDetails);
-
     useEffect(() => {
         dispatch(searchFolder(''));
     }, []);
 
     const { foldersSearch, loading } = useSelector((state: RootStateOrAny) => state.folderReducer);
+    const { account } = useSelector((state: RootStateOrAny) => state.authReducer);
 
     const handleChangeProgress = (progressScreen: number) => {
         dispatch(changeProgress(progressScreen));
@@ -127,7 +125,7 @@ export const CreateFlashCard = () => {
                 folder_id: idFolderSelect,
                 sub_folder_id: idSubFolderSelect,
             };
-            dispatch(createFlashCard({...config}));
+            dispatch(createFlashCard({...config}, account.project_id));
             dispatch(changeProgress(2));
         } else if (progress === 2){
             const config = {
@@ -135,7 +133,7 @@ export const CreateFlashCard = () => {
                 question: flashCard.question,
                 response: flashCard.response,
             };
-            dispatch(createFlashCard({...config}));
+            dispatch(createFlashCard({...config}, account.project_id));
             dispatch(changeProgress(3));
         } else {
             let array = [];
@@ -163,7 +161,7 @@ export const CreateFlashCard = () => {
                 photos: [...array],
                 progress: 3,
                 navigation: navigation,
-            }));
+            }, account.project_id));
         }
 
         // const buttonNext = Number(progress) + 1;
@@ -310,7 +308,9 @@ export const CreateFlashCard = () => {
                             </Text>
                         </View>
 
-                        <Text style={styles.title}>Frente</Text>
+                        <Text style={[styles.title, {
+                            marginTop: 10,
+                        }]}>{sideFlash ? 'Frente' : 'Verso'}</Text>
 
                         <FlashCard
                             handleChangeSide={handleChangeSide}

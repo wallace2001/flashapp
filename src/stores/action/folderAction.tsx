@@ -60,6 +60,9 @@ export const createFolder = (data: PropsFolderCreate) => async(dispatch: any) =>
             dispatch(error('Erro ao criar pasta'));
             dispatch(success(false));
         }
+    }).catch(() => {
+        dispatch(error('Erro ao criar pasta'));
+        dispatch(success(false));
     });
 };
 
@@ -79,25 +82,32 @@ export const requestFolder = (userId: string) => async(dispatch: any) => {
             dispatch(error('Erro ao criar pasta'));
             dispatch(success(false));
         }
+    }).catch(() => {
+        dispatch(error('Erro ao obter pasta'));
+        dispatch(success(false));
     });
 };
 
-export const deleteFolder = (id: string, userId: string) => async(dispatch: any) => {
+export const deleteFolder = (id: string, userId: string, folderId?: string, navigation?: any) => async(dispatch: any) => {
     dispatch(changeLoading(true));
     dispatch(loading(true));
 
-    await HttpAuth.delete(`/delete_folder?id=${id}`).then(res => {
+    await HttpAuth.delete(`/delete_folder?id=${id}&sub=${folderId ? folderId : ''}`).then(res => {
         dispatch(changeLoading(false));
         dispatch(loading(false));
 
         if (!res.data.error){
             dispatch(requestFolder(userId));
+            navigation.navigate('Home');
             dispatch(error(''));
             dispatch(success(true));
         } else {
             dispatch(error('Erro ao deletar pasta'));
             dispatch(success(false));
         }
+    }).catch(() => {
+        dispatch(error('Erro ao deletar pasta'));
+        dispatch(success(false));
     });
 };
 
@@ -117,5 +127,8 @@ export const searchFolder = (name: string) => async(dispatch: any) => {
             dispatch(error('Erro ao pesquisar pasta'));
             dispatch(success(false));
         }
+    }).catch(() => {
+        dispatch(error('Erro ao pesquisar pasta'));
+        dispatch(success(false));
     });
 };
